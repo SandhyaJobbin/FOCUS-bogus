@@ -4,45 +4,550 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Focus Bogus - Document Detective Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            max-width: 100%;
-            overflow: hidden;
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fc6404;
+            animation: confetti-fall 3s linear forwards;
+            z-index: 1000;
         }
 
-        a {
-            color: wheat;
-            background: Black;
-            Font-weight: 1000;
-            padding: 10px 20px;
-            border-radius: 10px;
-            Border: 2px solid black;
-            Box-shadow: 1px 1px 2px 3px Black;
-            text-decoration: None;
-            font-size: 20px;
-            transition: .5s ;
+        .confetti:nth-child(odd) {
+            background: #1464d4;
+            animation-duration: 2.5s;
         }
 
-        a:hover {
-            color: rgb(255, 255, 255);
-            background: rgb(20, 20, 21);
-            Border: 2px solid rgb(128, 128, 185);
-            Box-shadow: 1px 1px 2px 3px rgb(128, 128, 185);
-transform: scale(1.1);
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .timer-warning {
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes pulse-red {
+
+            0%,
+            100% {
+                background-color: #dc2626;
+            }
+
+            50% {
+                background-color: #ef4444;
+            }
+        }
+
+        .score-popup {
+            animation: score-bounce 0.8s ease-out;
+        }
+
+        @keyframes score-bounce {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2) rotate(-10deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .image-hover {
+            transition: all 0.3s ease;
+        }
+
+        .image-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, #fc6404, #1464d4);
+            animation: certificate-appear 1s ease-out;
+        }
+
+        @keyframes certificate-appear {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
+<body class="bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center">
+            <div class="mb-6">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Focus Bogus</h1>
+                <p class="text-xl text-orange-600 font-semibold">"No Place for Fakes—Your Focus is the Shield!"</p>
+            </div>
 
+            <div class="bg-gradient-to-r from-orange-100 to-blue-100 rounded-xl p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">🕵️ Welcome, Document Detective!</h2>
+                <p class="text-gray-700 mb-4">Ready to become the Sherlock Holmes of logo verification? You'll face 6
+                    mind-bending scenarios where fake logos try to sneak past your eagle eyes!</p>
+                <p class="text-gray-600 mb-4"><strong>Mission Duration:</strong> ~9 minutes of pure detective action</p>
+                <p class="text-gray-600">Think fast, think sharp, and remember - every real logo you catch makes the
+                    internet a safer place! 🛡️</p>
+            </div>
 
-<body>
-    <a href="https://docs.google.com/presentation/d/1QkWvGLpZzkdwNYOD9M5U6tUi43XUn0dA/edit?slide=id.p1#slide=id.p1">
-        Focus Bogus <img src="powerpoint.png" style="height: 30px;width: 30px;position: relative;top: 7px;" alt=""> </a>
+            <div class="bg-white border-2 border-orange-200 rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-3">🎯 Scoring Like a Pro:</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span>✅ Spot the real logo</span>
+                        <span class="font-bold text-green-600">+10 points</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>⚡ Lightning-fast response</span>
+                        <span class="font-bold text-blue-600">+5 bonus points</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>❌ Fooled by a fake</span>
+                        <span class="font-bold text-red-600">0 points (ouch!)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-500 to-orange-500 text-white rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold mb-2">🏆 Detective Ranks:</h3>
+                <div class="text-sm space-y-1">
+                    <div>🥇 90+ points = "Master Detective" - Ready to moderate!</div>
+                    <div>🥈 80-89 points = "Detective in Training" - Almost there!</div>
+                    <div>🥉 0-79 points = "Rookie Detective" - Time for more training!</div>
+                </div>
+            </div>
+
+            <button onclick="startGame()"
+                class="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-bold py-4 px-8 rounded-xl text-xl transition-all duration-300 transform hover:scale-105">
+                🚀 Start Your Detective Journey!
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden min-h-screen p-4">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-4 mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Focus Bogus Challenge</h2>
+                    <p class="text-gray-600">Scenario <span id="currentScenario">1</span> of 6</p>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-orange-600" id="score">0</div>
+                        <div class="text-sm text-gray-600">Score</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="timer" class="text-2xl font-bold text-blue-600 bg-blue-100 px-4 py-2 rounded-lg">60
+                        </div>
+                        <div class="text-sm text-gray-600">Seconds</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Warning Popup -->
+        <div id="timerWarning"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-red-500 text-white p-8 rounded-2xl text-center timer-warning">
+                <h3 class="text-3xl font-bold mb-2">⏰ TIME RUNNING OUT!</h3>
+                <p class="text-xl mb-4">Less than 30 seconds remaining!</p>
+                <div id="warningTimer" class="text-4xl font-bold">30</div>
+                <button onclick="closeTimerWarning()"
+                    class="mt-4 bg-white text-red-500 px-6 py-2 rounded-lg font-bold hover:bg-gray-100">
+                    Got it! 🏃‍♂️
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Content -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-2" id="scenarioTitle">Which logo is the REAL deal?</h3>
+                <p class="text-gray-600" id="scenarioDescription">One of these logos is authentic, the other is a sneaky
+                    imposter. Trust your instincts!</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-xl p-8 mb-4 image-hover cursor-pointer" onclick="selectImage(1)">
+                        <div
+                            class="w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center">
+                            <div class="text-gray-500">
+                                <svg class="w-16 h-16 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm">Logo Image 1</p>
+                                <p class="text-xs mt-1">(Click to upload your image)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="selectImage(1)"
+                        class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                        🎯 This is the Real One!
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-xl p-8 mb-4 image-hover cursor-pointer" onclick="selectImage(2)">
+                        <div
+                            class="w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center">
+                            <div class="text-gray-500">
+                                <svg class="w-16 h-16 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm">Logo Image 2</p>
+                                <p class="text-xs mt-1">(Click to upload your image)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="selectImage(2)"
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                        🎯 This is the Real One!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Popup -->
+        <div id="scorePopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-2xl text-center score-popup max-w-md">
+                <div id="scoreResult"></div>
+                <button onclick="nextScenario()"
+                    class="mt-6 bg-gradient-to-r from-orange-500 to-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-600 hover:to-blue-600 transition-all duration-300">
+                    Continue Adventure! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center">
+            <div id="resultsContent"></div>
+            <button onclick="restartGame()"
+                class="mt-6 bg-gradient-to-r from-orange-500 to-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-600 hover:to-blue-600 transition-all duration-300">
+                🔄 Train Again, Detective!
+            </button>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div id="certificateModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="certificate text-white p-8 rounded-2xl max-w-lg w-full text-center">
+            <h2 class="text-3xl font-bold mb-4">🏆 CERTIFICATE OF COMPLETION</h2>
+            <div class="bg-white bg-opacity-20 rounded-xl p-6 mb-6">
+                <h3 class="text-xl font-bold mb-2">Focus Bogus Training</h3>
+                <p class="mb-2">This certifies that</p>
+                <p class="text-2xl font-bold mb-2">DOCUMENT DETECTIVE</p>
+                <p class="mb-2">has successfully completed the</p>
+                <p class="text-lg font-bold mb-2">Betano Document Verification Training</p>
+                <p class="text-sm">Kaizen Gaming - Betano Division</p>
+            </div>
+            <div class="text-sm mb-4">
+                <p>Final Score: <span id="finalScore" class="font-bold"></span></p>
+                <p>Rank: <span id="finalRank" class="font-bold"></span></p>
+            </div>
+            <button onclick="closeCertificate()"
+                class="bg-white text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
+                Awesome! 🎉
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentScenario = 1;
+        let score = 0;
+        let timeLeft = 60;
+        let timerInterval;
+        let wrongAnswers = [];
+
+        // Scenario data - correct answers: [2,1,1,1,2,1]
+        const scenarios = [
+            { correct: 2, title: "Spot the Authentic Logo!", description: "One logo is legit, one is a wannabe. Which one passes the authenticity test?" },
+            { correct: 1, title: "Real vs Fake Showdown!", description: "The plot thickens! Can you separate the wheat from the chaff?" },
+            { correct: 1, title: "Detective Mode: Activated!", description: "Your detective skills are being tested. Which logo would make it past security?" },
+            { correct: 1, title: "The Final Frontier!", description: "Almost there, detective! One more fake trying to slip through the cracks." },
+            { correct: 2, title: "Plot Twist Alert!", description: "Just when you thought you had it figured out... which one is the real deal?" },
+            { correct: 1, title: "Grand Finale Challenge!", description: "Last chance to prove you're the ultimate document detective!" }
+        ];
+
+        function startGame() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            startTimer();
+            updateScenarioDisplay();
+        }
+
+        function startTimer() {
+            timeLeft = 60;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft === 30) {
+                    showTimerWarning();
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    selectImage(0); // Time's up, wrong answer
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeLeft;
+
+            if (timeLeft <= 30) {
+                timerElement.classList.add('timer-warning', 'text-red-600');
+                timerElement.classList.remove('text-blue-600', 'bg-blue-100');
+            }
+        }
+
+        function showTimerWarning() {
+            document.getElementById('timerWarning').classList.remove('hidden');
+            let warningTime = timeLeft;
+            const warningInterval = setInterval(() => {
+                document.getElementById('warningTimer').textContent = warningTime;
+                warningTime--;
+                if (warningTime < 0) {
+                    clearInterval(warningInterval);
+                }
+            }, 1000);
+        }
+
+        function closeTimerWarning() {
+            document.getElementById('timerWarning').classList.add('hidden');
+        }
+
+        function updateScenarioDisplay() {
+            document.getElementById('currentScenario').textContent = currentScenario;
+            document.getElementById('scenarioTitle').textContent = scenarios[currentScenario - 1].title;
+            document.getElementById('scenarioDescription').textContent = scenarios[currentScenario - 1].description;
+        }
+
+        function selectImage(choice) {
+            clearInterval(timerInterval);
+
+            const correct = scenarios[currentScenario - 1].correct;
+            const isCorrect = choice === correct;
+            const timeBonus = timeLeft > 30 ? 5 : 0;
+
+            if (!isCorrect) {
+                wrongAnswers.push({
+                    scenario: currentScenario,
+                    chosen: choice,
+                    correct: correct
+                });
+            }
+
+            showResult(isCorrect, timeBonus);
+        }
+
+        function showResult(isCorrect, timeBonus) {
+            const popup = document.getElementById('scorePopup');
+            const resultDiv = document.getElementById('scoreResult');
+
+            if (isCorrect) {
+                const points = 10 + timeBonus;
+                score += points;
+                createConfetti(50); // Big confetti for correct answer
+
+                resultDiv.innerHTML = `
+                    <div class="text-green-600 mb-4">
+                        <div class="text-6xl mb-2">🎉</div>
+                        <h3 class="text-2xl font-bold">Brilliant Detective Work!</h3>
+                        <p class="text-lg mt-2">You spotted the real logo!</p>
+                        <div class="mt-4 p-4 bg-green-100 rounded-lg">
+                            <p class="font-bold text-green-800">+${points} points earned!</p>
+                            ${timeBonus > 0 ? '<p class="text-sm text-green-700">⚡ Speed bonus included!</p>' : ''}
+                        </div>
+                    </div>
+                `;
+                createScoreAnimation(points);
+            } else {
+                createConfetti(10); // Small confetti for participation
+
+                resultDiv.innerHTML = `
+                    <div class="text-red-600 mb-4">
+                        <div class="text-6xl mb-2">🕵️</div>
+                        <h3 class="text-2xl font-bold">Oops! The Fake Got You!</h3>
+                        <p class="text-lg mt-2">That sneaky imposter fooled you this time!</p>
+                        <div class="mt-4 p-4 bg-red-100 rounded-lg">
+                            <p class="font-bold text-red-800">No points this round</p>
+                            <p class="text-sm text-red-700">But every detective learns from mistakes! 🎓</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('score').textContent = score;
+            popup.classList.remove('hidden');
+        }
+
+        function createConfetti(count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 50);
+            }
+        }
+
+        function createScoreAnimation(points) {
+            const scoreElement = document.getElementById('score');
+            const animation = document.createElement('div');
+            animation.textContent = `+${points}`;
+            animation.className = 'fixed text-2xl font-bold text-green-500 z-50 score-popup';
+            animation.style.left = '50%';
+            animation.style.top = '20%';
+            animation.style.transform = 'translateX(-50%)';
+            document.body.appendChild(animation);
+
+            setTimeout(() => {
+                animation.remove();
+            }, 800);
+        }
+
+        function nextScenario() {
+            document.getElementById('scorePopup').classList.add('hidden');
+
+            if (currentScenario < 6) {
+                currentScenario++;
+                updateScenarioDisplay();
+
+                // Reset timer display
+                const timerElement = document.getElementById('timer');
+                timerElement.classList.remove('timer-warning', 'text-red-600');
+                timerElement.classList.add('text-blue-600', 'bg-blue-100');
+
+                startTimer();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            let rank, rankEmoji, rankColor, message;
+
+            if (score >= 90) {
+                rank = "Master Detective";
+                rankEmoji = "🥇";
+                rankColor = "text-green-600";
+                message = "Outstanding! You're ready to moderate like a pro! The fakes don't stand a chance against you! 🛡️";
+            } else if (score >= 80) {
+                rank = "Detective in Training";
+                rankEmoji = "🥈";
+                rankColor = "text-yellow-600";
+                message = "Great work! You're almost there! A little more training and you'll be unstoppable! 📚";
+            } else {
+                rank = "Rookie Detective";
+                rankEmoji = "🥉";
+                rankColor = "text-red-600";
+                message = "Don't worry, every great detective started somewhere! Time for some additional training! 💪";
+            }
+
+            let wrongAnswersHtml = '';
+            if (wrongAnswers.length > 0) {
+                wrongAnswersHtml = `
+                    <div class="mt-6 p-4 bg-red-50 rounded-lg">
+                        <h4 class="font-bold text-red-800 mb-2">🔍 Detective Notes - Cases to Review:</h4>
+                        <div class="text-sm text-red-700 space-y-1">
+                            ${wrongAnswers.map(wa =>
+                    `<p>Scenario ${wa.scenario}: You chose Image ${wa.chosen}, but Image ${wa.correct} was the real one!</p>`
+                ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="mb-6">
+                    <div class="text-6xl mb-4">${rankEmoji}</div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Complete!</h2>
+                    <div class="text-6xl font-bold ${rankColor} mb-2">${score}</div>
+                    <p class="text-xl text-gray-600 mb-4">Final Score</p>
+                    <div class="bg-gradient-to-r from-orange-100 to-blue-100 rounded-xl p-4 mb-4">
+                        <h3 class="text-xl font-bold ${rankColor}">${rank}</h3>
+                        <p class="text-gray-700 mt-2">${message}</p>
+                    </div>
+                </div>
+                ${wrongAnswersHtml}
+                <button onclick="showCertificate()" class="mt-4 bg-gradient-to-r from-orange-500 to-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-600 hover:to-blue-600 transition-all duration-300">
+                    🏆 Get Your Certificate!
+                </button>
+            `;
+        }
+
+        function showCertificate() {
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalRank').textContent =
+                score >= 90 ? "Master Detective" :
+                    score >= 80 ? "Detective in Training" :
+                        "Rookie Detective";
+            document.getElementById('certificateModal').classList.remove('hidden');
+            createConfetti(100);
+        }
+
+        function closeCertificate() {
+            document.getElementById('certificateModal').classList.add('hidden');
+        }
+
+        function restartGame() {
+            currentScenario = 1;
+            score = 0;
+            wrongAnswers = [];
+            document.getElementById('score').textContent = '0';
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9633f4de735b4664',t:'MTc1MzE5Nzk4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
 
 </html>
