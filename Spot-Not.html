@@ -5,841 +5,785 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spot the Not - Document Detective Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'betano-orange': '#fc6404',
+                        'betano-blue': '#1464d4'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fc6404 0%, #1464d4 100%);
-            min-height: 100vh;
-            color: white;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .logo-container {
-            margin-bottom: 20px;
-        }
-
-        .logo-placeholder {
-            width: 120px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .subtitle {
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            color: #ffd700;
-        }
-
-        .welcome-screen {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .welcome-text {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .scoring-info {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .scoring-info h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-        }
-
-        .score-item {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            font-size: 1rem;
-        }
-
-        .score-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .correct {
-            background: #4CAF50;
-        }
-
-        .bonus {
-            background: #2196F3;
-        }
-
-        .incorrect {
-            background: #f44336;
-        }
-
-        .game-container {
-            display: none;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .score-display {
-            font-size: 1.5rem;
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 25px;
-        }
-
-        .timer {
-            font-size: 1.5rem;
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .timer.warning {
-            background: #ff4444;
-            animation: pulse 1s infinite;
-        }
-
-        .timer-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #ff4444;
-            color: white;
-            padding: 30px 50px;
-            border-radius: 20px;
-            font-size: 3rem;
-            font-weight: bold;
-            z-index: 1000;
-            display: none;
-            animation: timerPulse 0.5s ease-in-out;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        @keyframes timerPulse {
-            0% {
-                transform: translate(-50%, -50%) scale(0.8);
-                opacity: 0;
-            }
-
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-        }
-
-        .question-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .question-number {
-            font-size: 1.2rem;
-            color: #ffd700;
-            margin-bottom: 10px;
-        }
-
-        .question-text {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
-
-        .document-container {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px auto;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .document-placeholder {
-            width: 100%;
-            height: 300px;
-            background: #f0f0f0;
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 1rem;
-        }
-
-        .answer-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .answer-btn {
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .accept-btn {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .accept-btn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .reject-btn {
-            background: #f44336;
-            color: white;
-        }
-
-        .reject-btn:hover {
-            background: #da190b;
-            transform: translateY(-2px);
-        }
-
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            display: none;
-            animation: slideIn 0.5s ease;
-        }
-
-        .feedback.correct {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid #4CAF50;
-        }
-
-        .feedback.incorrect {
-            background: rgba(244, 67, 54, 0.2);
-            border: 2px solid #f44336;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .next-btn {
-            background: #fc6404;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .next-btn:hover {
-            background: #e55a04;
-            transform: translateY(-2px);
-        }
-
-        .start-btn {
-            background: linear-gradient(45deg, #fc6404, #1464d4);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .results-screen {
-            display: none;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .final-score {
-            font-size: 4rem;
-            font-weight: bold;
-            color: #ffd700;
-            margin: 20px 0;
-        }
-
-        .performance-level {
-            font-size: 2rem;
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        .ready {
-            background: rgba(76, 175, 80, 0.3);
-        }
-
-        .training {
-            background: rgba(255, 193, 7, 0.3);
-        }
-
-        .risk {
-            background: rgba(244, 67, 54, 0.3);
-        }
-
-        .certificate {
-            background: white;
-            color: #333;
-            padding: 40px;
-            border-radius: 20px;
-            margin: 30px 0;
-            border: 5px solid #ffd700;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .certificate h2 {
-            color: #fc6404;
-            font-size: 2rem;
-            margin-bottom: 20px;
         }
 
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            background: #ffd700;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        .score-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(76, 175, 80, 0.9);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 15px;
-            font-size: 2rem;
-            font-weight: bold;
+            background: #fc6404;
+            animation: confetti-fall 3s linear forwards;
             z-index: 1000;
-            display: none;
-            animation: scorePopup 1s ease-in-out;
         }
 
-        @keyframes scorePopup {
-            0% {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-            }
+        .confetti:nth-child(odd) {
+            background: #1464d4;
+            width: 8px;
+            height: 8px;
+            animation-duration: 2.5s;
+        }
 
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
+        .confetti:nth-child(3n) {
+            background: #ffd700;
+            width: 6px;
+            height: 6px;
+            animation-duration: 3.5s;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
                 opacity: 1;
             }
 
             100% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .timer-warning {
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes pulse-red {
+
+            0%,
+            100% {
+                background-color: #dc2626;
+                transform: scale(1);
+            }
+
+            50% {
+                background-color: #ef4444;
+                transform: scale(1.05);
+            }
+        }
+
+        .score-popup {
+            animation: score-bounce 0.8s ease-out;
+        }
+
+        @keyframes score-bounce {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2) rotate(-10deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
         }
 
-        .answer-key {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: left;
+        .gradient-bg {
+            background: linear-gradient(135deg, #fc6404 0%, #1464d4 100%);
         }
 
-        .answer-key h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
+        .slide-out {
+            animation: slideOut 0.5s ease-in-out forwards;
         }
 
-        .wrong-answer {
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(244, 67, 54, 0.2);
-            border-radius: 8px;
+        .slide-in {
+            animation: slideIn 0.5s ease-in-out forwards;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
+        @keyframes slideOut {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
             }
 
-            h1 {
-                font-size: 2rem;
+            100% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
             }
 
-            .subtitle {
-                font-size: 1.2rem;
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
             }
 
-            .answer-buttons {
-                flex-direction: column;
-                align-items: center;
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
             }
 
-            .game-header {
-                flex-direction: column;
-                text-align: center;
+            100% {
+                opacity: 1;
             }
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <div class="logo-placeholder">Kaizen Gaming Logo</div>
-                <div class="logo-placeholder">Betano Logo</div>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center">
+            <div class="mb-6">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Spot the Not</h1>
+                <p class="text-xl text-betano-orange font-semibold">"Crack the Case—One Document at a Time!"</p>
             </div>
-            <h1>Spot the Not</h1>
-            <div class="subtitle">"Crack the Case—One Document at a Time!"</div>
+
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold text-betano-blue mb-4">🕵️ Welcome, Document Detective!</h2>
+                <p class="text-gray-700 mb-4">Ready to become the Sherlock Holmes of ID verification? You're about to
+                    face 8 suspicious Romanian ID documents. Some are legit, others are faker than a three-dollar bill!
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4 text-left">
+                    <div class="bg-white rounded-lg p-4">
+                        <h3 class="font-semibold text-betano-orange mb-2">🎯 Scoring System:</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>✅ Correct answer: <span class="font-bold">+15 points</span></li>
+                            <li>⚡ Speed bonus: <span class="font-bold">+10 points</span></li>
+                            <li>❌ Wrong answer: <span class="font-bold">0 points</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4">
+                        <h3 class="font-semibold text-betano-blue mb-2">🏆 Performance Levels:</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>90+: <span class="font-bold text-green-600">Ready to Moderate!</span></li>
+                            <li>80-90: <span class="font-bold text-yellow-600">Needs Training</span></li>
+                            <li>0-80: <span class="font-bold text-red-600">High Risk</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label for="userName" class="block text-lg font-semibold text-gray-700 mb-2">Enter Your Name:</label>
+                <input type="text" id="userName" placeholder="Your full name here..."
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-betano-orange focus:outline-none text-lg text-center">
+            </div>
+
+            <p class="text-gray-600 mb-6">Duration: ~16 minutes of pure detective work!</p>
+            <button onclick="startGame()"
+                class="bg-betano-orange hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all transform hover:scale-105">
+                🚀 Start the Challenge!
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden min-h-screen bg-gray-50">
+        <!-- Header -->
+        <div class="bg-white shadow-lg p-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-6">
+                        <h1 class="text-2xl font-bold text-betano-blue">Spot the Not</h1>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-betano-blue text-white px-4 py-2 rounded-lg">
+                                <span class="font-semibold">Question: <span id="currentQuestion">1</span>/8</span>
+                            </div>
+                            <div class="bg-betano-orange text-white px-4 py-2 rounded-lg">
+                                <span class="font-semibold">Score: <span id="currentScore">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="timer" class="bg-green-500 text-white px-6 py-2 rounded-lg font-bold text-lg">
+                        ⏱️ <span id="timeLeft">60</span>s
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-600">Progress</span>
+                        <span class="text-sm font-medium text-gray-600"><span id="progressPercent">12.5</span>%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div id="progressBar"
+                            class="bg-gradient-to-r from-betano-orange to-betano-blue h-3 rounded-full transition-all duration-700 ease-out"
+                            style="width: 12.5%"></div>
+                    </div>
+                    <div class="flex justify-between mt-2">
+                        <div class="flex space-x-1">
+                            <div id="step1" class="w-3 h-3 rounded-full bg-betano-orange transition-all duration-300">
+                            </div>
+                            <div id="step2" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <div id="step3" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <div id="step4" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <div id="step5" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <div id="step6" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <div id="step7" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <div id="step8" class="w-3 h-3 rounded-full bg-gray-300 transition-all duration-300"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">8 Documents Total</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="welcome-screen" id="welcomeScreen">
-            <div class="welcome-text">
-                🕵️ Welcome to the ultimate document detective challenge! You're about to become a master fraud-buster,
-                one suspicious ID at a time. Think you can spot a fake from a mile away? Let's put those eagle eyes to
-                the test!
-                <br><br>
-                You'll examine 8 Romanian ID documents - some are legit, others are faker than a three-dollar bill. Your
-                mission: Accept the real deals and reject the phonies!
-            </div>
-
-            <div class="scoring-info">
-                <h3>🎯 How to Become a Document Detective Legend:</h3>
-                <div class="score-item">
-                    <div class="score-icon correct">✓</div>
-                    Nail the right answer = +10 points (You're basically Sherlock Holmes!)
-                </div>
-                <div class="score-item">
-                    <div class="score-icon bonus">⚡</div>
-                    Lightning-fast response = +5 bonus points (Speed demon!)
-                </div>
-                <div class="score-item">
-                    <div class="score-icon incorrect">✗</div>
-                    Wrong answer = 0 points (Oops, happens to the best of us!)
-                </div>
-            </div>
-
-            <div class="scoring-info">
-                <h3>🏆 Your Detective Ranking:</h3>
-                <div class="score-item">🌟 90+ points = Ready to Moderate (You're the fraud-fighting superhero!)</div>
-                <div class="score-item">📚 80-89 points = Needs Training (Almost there, future detective!)</div>
-                <div class="score-item">⚠️ 0-79 points = High Risk (Time for some serious detective school!)</div>
-            </div>
-
-            <button class="start-btn" onclick="startGame()">Let's Catch Some Fakes! 🚀</button>
-        </div>
-
-        <div class="game-container" id="gameContainer">
-            <div class="game-header">
-                <div class="score-display">Score: <span id="score">0</span></div>
-                <div class="timer" id="timer">Time: 16:00</div>
-            </div>
-
-            <div class="question-container">
-                <div class="question-number" id="questionNumber">Document 1 of 8</div>
-                <div class="question-text">Is this Romanian ID document authentic? Trust your instincts!</div>
-            </div>
-
-            <div class="document-container">
-                <div class="document-placeholder" id="documentImage">
-                    Document Image Will Appear Here
-                    <br><small>Upload your Romanian ID specimen images</small>
-                </div>
-            </div>
-
-            <div class="answer-buttons">
-                <button class="answer-btn accept-btn" onclick="submitAnswer('accept')">✅ Accept</button>
-                <button class="answer-btn reject-btn" onclick="submitAnswer('reject')">❌ Reject</button>
-            </div>
-
-            <div class="feedback" id="feedback">
-                <div id="feedbackText"></div>
-                <button class="next-btn" onclick="nextQuestion()">Next Challenge →</button>
+        <!-- Timer Warning Popup -->
+        <div id="timerWarning"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-red-500 text-white p-8 rounded-2xl text-center timer-warning">
+                <h2 class="text-3xl font-bold mb-4">⚠️ TIME RUNNING OUT!</h2>
+                <p class="text-xl mb-4">Less than 30 seconds remaining!</p>
+                <p class="text-lg">Make your choice quickly, detective!</p>
             </div>
         </div>
 
-        <div class="results-screen" id="resultsScreen">
-            <h2>🎉 Detective Mission Complete!</h2>
-            <div class="final-score" id="finalScore">0</div>
-            <div class="performance-level" id="performanceLevel"></div>
-
-            <div class="answer-key" id="answerKey" style="display: none;">
-                <h3>🔍 Where You Went Wrong (Detective Notes):</h3>
-                <div id="wrongAnswers"></div>
+        <!-- Score Popup -->
+        <div id="scorePopup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+            <div class="bg-green-500 text-white p-6 rounded-2xl text-center score-popup">
+                <h3 class="text-2xl font-bold mb-2">🎉 Great Job!</h3>
+                <p class="text-lg" id="scoreText">+15 points!</p>
             </div>
+        </div>
 
-            <div class="certificate" id="certificate">
-                <h2>🏆 Certificate of Completion</h2>
-                <p><strong>This certifies that</strong></p>
-                <h3 style="color: #1464d4; margin: 20px 0;">[Agent Name]</h3>
-                <p>has successfully completed the</p>
-                <h3 style="color: #fc6404;">Spot the Not Document Verification Challenge</h3>
-                <p>and demonstrated skills in identifying fraudulent documents</p>
-                <br>
-                <p><strong>Score Achieved:</strong> <span id="certScore">0</span>/120 points</p>
-                <p><strong>Date:</strong> <span id="certDate"></span></p>
-                <br>
-                <p style="font-style: italic;">Kaizen Gaming - Betano Document Verification Training</p>
+        <!-- Main Game Area -->
+        <div class="max-w-6xl mx-auto p-6">
+            <div id="gameContent" class="bg-white rounded-2xl shadow-lg p-8 transition-all duration-500">
+                <h2 class="text-2xl font-bold text-center mb-6 text-gray-800" id="questionTitle">
+                    🔍 Document Detective Challenge #1
+                </h2>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Document Image -->
+                    <div class="text-center">
+                        <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                            <img id="documentImage" src="" alt="Romanian ID Document"
+                                class="w-full h-96 object-contain rounded-lg border-2 border-gray-300 transition-all duration-300">
+                        </div>
+                        <p class="text-gray-600 italic">Examine this document carefully...</p>
+                    </div>
+
+                    <!-- Decision Panel -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="text-xl font-bold text-betano-blue mb-4">🤔 What's your verdict, detective?</h3>
+                            <p class="text-gray-700 mb-6">Look for signs of tampering, inconsistencies, or missing
+                                elements. Trust your training!</p>
+
+                            <div class="space-y-4">
+                                <button onclick="makeChoice('accept')"
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center">
+                                    ✅ ACCEPT - This document looks legit!
+                                </button>
+
+                                <button onclick="makeChoice('reject')"
+                                    class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center">
+                                    ❌ REJECT - Something's fishy here!
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <h4 class="font-semibold text-yellow-800 mb-2">💡 Pro Tip:</h4>
+                            <p class="text-yellow-700 text-sm">Check for photo quality, background gradients,
+                                signatures, and address validity!</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="timer-popup" id="timerPopup">30</div>
-    <div class="score-popup" id="scorePopup">+10 Points!</div>
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-4xl w-full">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">🎉 Challenge Complete!</h1>
+                <div class="text-6xl mb-4" id="resultEmoji">🏆</div>
+                <h2 class="text-2xl font-bold mb-2" id="resultTitle">Congratulations, Detective!</h2>
+                <p class="text-xl text-gray-600" id="resultSubtitle">You've cracked the case!</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-gray-50 rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-bold text-betano-blue mb-4">📊 Your Performance</h3>
+                    <div class="text-4xl font-bold text-betano-orange mb-2" id="finalScore">0</div>
+                    <p class="text-gray-600">out of 200 points</p>
+                    <div class="mt-4 p-4 rounded-lg" id="performanceLevel">
+                        <p class="font-bold text-lg" id="levelText">Performance Level</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-betano-blue mb-4">📈 Breakdown</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Correct Answers:</span>
+                            <span class="font-bold" id="correctCount">0/8</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Speed Bonuses:</span>
+                            <span class="font-bold" id="bonusCount">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Accuracy:</span>
+                            <span class="font-bold" id="accuracy">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Section -->
+            <div id="certificateSection" class="hidden">
+                <div class="bg-gradient-to-r from-betano-orange to-betano-blue p-1 rounded-lg mb-6">
+                    <div class="bg-white rounded-lg p-6">
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">🏅 Certificate of Completion</h3>
+                            <div class="border-2 border-gray-300 rounded-lg p-6">
+                                <h4 class="text-xl font-bold mb-2">Document Verification Training</h4>
+                                <p class="text-gray-600 mb-4">This certifies that</p>
+                                <p class="text-2xl font-bold text-betano-blue mb-4" id="certificateName">Detective Name
+                                </p>
+                                <p class="text-gray-600 mb-2">has successfully completed the</p>
+                                <p class="text-lg font-bold text-betano-blue mb-4">"Spot the Not" Challenge</p>
+                                <p class="text-gray-600 mb-4">and achieved a performance level of:</p>
+                                <p class="text-xl font-bold text-betano-orange" id="certificateLevel">Ready to Moderate
+                                </p>
+                                <div class="mt-6 text-sm text-gray-500">
+                                    <p id="certificateDate"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wrong Answers Review -->
+            <div id="reviewSection" class="hidden mb-6">
+                <h3 class="text-xl font-bold text-red-600 mb-4">📚 Let's Review Your Mistakes</h3>
+                <div id="wrongAnswers" class="space-y-4"></div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="restartGame()"
+                    class="bg-betano-orange hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg mr-4 transition-all transform hover:scale-105">
+                    🔄 Try Again
+                </button>
+                <button onclick="downloadCertificate()" id="downloadBtn"
+                    class="hidden bg-betano-blue hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105">
+                    📜 Download Certificate
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        let currentQuestion = 0;
+        // Game state
+        let currentQuestionIndex = 0;
         let score = 0;
-        let timeLeft = 16 * 60; // 16 minutes in seconds
-        let gameTimer;
+        let correctAnswers = 0;
+        let speedBonuses = 0;
+        let timer;
+        let timeLeft = 60;
         let wrongAnswers = [];
 
-        const questions = [
-            { correct: 'accept', reason: '' },
-            { correct: 'reject', reason: 'Blurred photo, inconsistent lighting, poor photo quality - lighting mismatch is a common sign of tampering' },
-            { correct: 'reject', reason: 'Background color is solid blue, not gradient. Official cards have a blue-yellow-red gradient' },
-            { correct: 'accept', reason: '' },
-            { correct: 'reject', reason: 'Address includes a foreign city (e.g., "Paris"). Romanian IDs must have valid Romanian addresses' },
-            { correct: 'reject', reason: 'Signature missing below the photo. All real Romanian IDs include a digital signature' },
-            { correct: 'accept', reason: '' },
-            { correct: 'accept', reason: '' }
+        // Document data
+        const documents = [
+            { id: 1, correctAnswer: 'accept', reason: null, imageUrl: 'Picture1.png' },
+            { id: 2, correctAnswer: 'reject', reason: 'Blurred photo, inconsistent lighting, poor photo quality, lighting mismatch – a common sign of tampering', imageUrl: 'Picture2.png' },
+            { id: 3, correctAnswer: 'reject', reason: 'Background color is solid blue, not gradient. Official cards have a blue-yellow-red gradient', imageUrl: 'Picture3.png' },
+            { id: 4, correctAnswer: 'accept', reason: null, imageUrl: 'Picture4.png' },
+            { id: 5, correctAnswer: 'reject', reason: 'Address includes a foreign city (e.g., "Paris"). Romanian IDs must have valid Romanian addresses', imageUrl: 'Picture5' },
+            { id: 6, correctAnswer: 'reject', reason: 'Signature missing below the photo. All real Romanian IDs include a digital signature', imageUrl: 'Picture6' },
+            { id: 7, correctAnswer: 'accept', reason: null, imageUrl: 'Picture7' },
+            { id: 8, correctAnswer: 'accept', reason: null, imageUrl: "Picture8" }
         ];
 
         function startGame() {
-            document.getElementById('welcomeScreen').style.display = 'none';
-            document.getElementById('gameContainer').style.display = 'block';
+            const userName = document.getElementById('userName').value.trim();
+            if (!userName) {
+                alert('🕵️ Hold on there, detective! Please enter your name before starting the challenge.');
+                return;
+            }
+
+            // Store the user's name for the certificate
+            window.userFullName = userName;
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
             startTimer();
-            updateQuestion();
+            updateDisplay();
         }
 
         function startTimer() {
-            gameTimer = setInterval(() => {
+            timeLeft = 60;
+            updateTimerDisplay();
+
+            timer = setInterval(() => {
                 timeLeft--;
                 updateTimerDisplay();
 
                 if (timeLeft <= 30 && timeLeft > 0) {
-                    document.getElementById('timer').classList.add('warning');
-                    showTimerPopup();
+                    showTimerWarning();
                 }
 
                 if (timeLeft <= 0) {
-                    endGame();
+                    clearInterval(timer);
+                    // Timer continues running but doesn't timeout
                 }
             }, 1000);
         }
 
         function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
+            const timerElement = document.getElementById('timer');
+            const timeLeftElement = document.getElementById('timeLeft');
 
-        function showTimerPopup() {
-            const popup = document.getElementById('timerPopup');
-            popup.textContent = timeLeft;
-            popup.style.display = 'block';
-            setTimeout(() => {
-                popup.style.display = 'none';
-            }, 1000);
-        }
+            if (timeLeft <= 0) {
+                timeLeftElement.textContent = '0';
+                timerElement.className = 'bg-gray-500 text-white px-6 py-2 rounded-lg font-bold text-lg';
+            } else {
+                timeLeftElement.textContent = timeLeft;
 
-        function updateQuestion() {
-            document.getElementById('questionNumber').textContent = `Document ${currentQuestion + 1} of 8`;
-            document.getElementById('documentImage').innerHTML = `
-                Romanian ID Document ${currentQuestion + 1}
-                <br><small>Upload specimen image ${currentQuestion + 1}</small>
-            `;
-            document.getElementById('feedback').style.display = 'none';
-        }
-
-        function submitAnswer(answer) {
-            const correct = questions[currentQuestion].correct === answer;
-            let points = 0;
-
-            if (correct) {
-                points = 10;
-                if (timeLeft > 15 * 60 - (currentQuestion + 1) * 120) { // Bonus for quick answers
-                    points += 5;
+                if (timeLeft <= 30) {
+                    timerElement.className = 'bg-red-500 text-white px-6 py-2 rounded-lg font-bold text-lg timer-warning';
+                } else {
+                    timerElement.className = 'bg-green-500 text-white px-6 py-2 rounded-lg font-bold text-lg';
                 }
-                score += points;
-                showFeedback(true, points);
+            }
+        }
+
+        function showTimerWarning() {
+            if (timeLeft === 30) {
+                document.getElementById('timerWarning').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('timerWarning').classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function makeChoice(choice) {
+            clearInterval(timer);
+
+            const currentDoc = documents[currentQuestionIndex];
+            const isCorrect = choice === currentDoc.correctAnswer;
+
+            if (isCorrect) {
+                score += 15;
+                correctAnswers++;
+
+                // Speed bonus (only if timer hasn't expired)
+                if (timeLeft > 30 && timeLeft > 0) {
+                    score += 10;
+                    speedBonuses++;
+                    if (choice === 'reject' && currentDoc.reason) {
+                        showScorePopup('+25 points! (Speed bonus included!)', true, currentDoc.reason);
+                    } else {
+                        showScorePopup('+25 points! (Speed bonus included!)', true);
+                    }
+                } else {
+                    if (choice === 'reject' && currentDoc.reason) {
+                        showScorePopup('+15 points!', true, currentDoc.reason);
+                    } else {
+                        showScorePopup('+15 points!', true);
+                    }
+                }
+
                 createConfetti();
-                showScorePopup(points);
             } else {
                 wrongAnswers.push({
-                    question: currentQuestion + 1,
-                    reason: questions[currentQuestion].reason,
-                    userAnswer: answer,
-                    correctAnswer: questions[currentQuestion].correct
+                    question: currentQuestionIndex + 1,
+                    reason: currentDoc.reason || 'This document should be accepted',
+                    userAnswer: choice,
+                    correctAnswer: currentDoc.correctAnswer
                 });
-                showFeedback(false, 0);
+                showScorePopup('0 points - Better luck next time!', false, currentDoc.reason || 'This document should be accepted');
             }
 
-            document.getElementById('score').textContent = score;
+            // All answers now require user to click Continue button
         }
 
-        function showFeedback(correct, points) {
-            const feedback = document.getElementById('feedback');
-            const feedbackText = document.getElementById('feedbackText');
-            const currentAnswer = questions[currentQuestion].correct;
-            const reason = questions[currentQuestion].reason;
+        function showScorePopup(text, isCorrect, reason = null) {
+            const popup = document.getElementById('scorePopup');
+            const scoreText = document.getElementById('scoreText');
+            const popupDiv = popup.querySelector('div');
 
-            if (correct) {
-                feedback.className = 'feedback correct';
-
-                if (currentAnswer === 'accept') {
-                    feedbackText.innerHTML = `
-                        <h3>🎉 Spot On, Detective!</h3>
-                        <p>You earned ${points} points! This document passed all authenticity checks.</p>
-                        <p><strong>Why ACCEPT was correct:</strong> This Romanian ID shows all the proper security features, correct formatting, and authentic elements that make it legitimate.</p>
-                        <p>Great eye for spotting genuine documents! 👏</p>
+            if (isCorrect) {
+                if (reason) {
+                    // Correct rejection with explanation
+                    popupDiv.className = 'bg-green-50 border-2 border-green-200 text-gray-800 p-6 rounded-2xl text-center score-popup max-w-lg shadow-lg';
+                    popupDiv.innerHTML = `
+                        <h3 class="text-2xl font-bold mb-2 text-green-700">✅ Correct Rejection!</h3>
+                        <p class="text-lg mb-3 text-green-600">${text}</p>
+                        <div class="bg-green-100 border border-green-200 rounded-lg p-3 mb-3">
+                            <p class="text-sm font-semibold text-green-800">You spotted the issue correctly!</p>
+                        </div>
+                        <button onclick="showExplanation()" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mb-3 transition-all">
+                            📚 Show Why This Was Rejected
+                        </button>
+                        <div id="explanationText" class="hidden bg-slate-100 border border-slate-200 rounded-lg p-3 mb-3">
+                            <p class="text-sm text-slate-700"><strong>Rejection Reason:</strong> ${reason}</p>
+                        </div>
+                        <button onclick="closePopup()" class="bg-betano-blue hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                            ➡️ Continue to Next Question
+                        </button>
                     `;
                 } else {
-                    feedbackText.innerHTML = `
-                        <h3>🎉 Excellent Fraud Detection!</h3>
-                        <p>You earned ${points} points! You correctly identified this fake document.</p>
-                        <p><strong>Why REJECT was the right call:</strong> ${reason}</p>
-                        <p>Outstanding work catching this fraudulent attempt! Your attention to detail is impressive! 🕵️‍♂️</p>
+                    // Correct acceptance
+                    popupDiv.className = 'bg-green-50 border-2 border-green-200 text-gray-800 p-6 rounded-2xl text-center score-popup max-w-lg shadow-lg';
+                    popupDiv.innerHTML = `
+                        <h3 class="text-2xl font-bold mb-2 text-green-700">🎉 Great Job!</h3>
+                        <p class="text-lg mb-3 text-green-600">${text}</p>
+                        <div class="bg-green-100 border border-green-200 rounded-lg p-3 mb-3">
+                            <p class="text-sm font-semibold text-green-800">Document correctly accepted!</p>
+                        </div>
+                        <button onclick="closePopup()" class="bg-betano-blue hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                            ➡️ Continue to Next Question
+                        </button>
                     `;
                 }
             } else {
-                feedback.className = 'feedback incorrect';
-                feedbackText.innerHTML = `
-                    <h3>🔍 Not Quite Right!</h3>
-                    <p><strong>The correct answer was:</strong> ${currentAnswer.toUpperCase()}</p>
-                    ${reason ? `<p><strong>Why ${currentAnswer.toUpperCase()} was correct:</strong> ${reason}</p>` :
-                        `<p><strong>Why ACCEPT was correct:</strong> This document shows all proper security features and authentic elements of a legitimate Romanian ID.</p>`}
-                    <p>Don't worry, even the best detectives learn from their mistakes! Each case makes you sharper! 💪</p>
+                popupDiv.className = 'bg-blue-50 border-2 border-blue-200 text-gray-800 p-6 rounded-2xl text-center score-popup max-w-lg shadow-lg';
+                const currentDoc = documents[currentQuestionIndex];
+                const correctAnswerText = currentDoc.correctAnswer === 'accept' ? 'ACCEPT' : 'REJECT';
+
+                popupDiv.innerHTML = `
+                    <h3 class="text-2xl font-bold mb-2 text-slate-700">❌ Incorrect!</h3>
+                    <p class="text-lg mb-3 text-slate-600">${text}</p>
+                    <div class="bg-indigo-100 border border-indigo-200 rounded-lg p-3 mb-3">
+                        <p class="text-sm font-semibold text-indigo-800">Correct Answer: ${correctAnswerText}</p>
+                    </div>
+                    ${reason ? `
+                        <button onclick="showExplanation()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg mb-3 transition-all">
+                            📚 Show Explanation
+                        </button>
+                        <div id="explanationText" class="hidden bg-slate-100 border border-slate-200 rounded-lg p-3 mb-3">
+                            <p class="text-sm text-slate-700"><strong>Why:</strong> ${reason}</p>
+                        </div>
+                        <button onclick="closePopup()" class="bg-betano-blue hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                            ➡️ Continue to Next Question
+                        </button>
+                    ` : `
+                        <button onclick="closePopup()" class="bg-betano-blue hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg mt-3 transition-all">
+                            ➡️ Continue to Next Question
+                        </button>
+                    `}
                 `;
             }
 
-            feedback.style.display = 'block';
+            popup.classList.remove('hidden');
+
+            // All popups now require user to click Continue button - no auto-hide
         }
 
-        function showScorePopup(points) {
-            const popup = document.getElementById('scorePopup');
-            popup.textContent = `+${points} Points!`;
-            popup.style.display = 'block';
+        function showExplanation() {
+            const explanationDiv = document.getElementById('explanationText');
+            const button = event.target;
+
+            if (explanationDiv.classList.contains('hidden')) {
+                explanationDiv.classList.remove('hidden');
+                button.textContent = '📖 Hide Explanation';
+            } else {
+                explanationDiv.classList.add('hidden');
+                button.textContent = '📚 Show Explanation';
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('scorePopup').classList.add('hidden');
+
+            // Continue to next question
             setTimeout(() => {
-                popup.style.display = 'none';
-            }, 1500);
+                transitionToNextQuestion();
+            }, 500);
+        }
+
+        function transitionToNextQuestion() {
+            const gameContent = document.getElementById('gameContent');
+
+            // Add fade out animation
+            gameContent.classList.add('fade-out');
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < documents.length) {
+                    updateDisplay();
+
+                    // Remove fade out and add fade in
+                    gameContent.classList.remove('fade-out');
+                    gameContent.classList.add('fade-in');
+
+                    setTimeout(() => {
+                        gameContent.classList.remove('fade-in');
+                        startTimer();
+                    }, 300);
+                } else {
+                    showResults();
+                }
+            }, 300);
         }
 
         function createConfetti() {
-            const colors = ['#ffd700', '#fc6404', '#1464d4', '#4CAF50', '#ff4444'];
-
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
                     confetti.className = 'confetti';
                     confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    confetti.style.animation = `fall ${confetti.style.animationDuration} linear forwards`;
-
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
                     document.body.appendChild(confetti);
 
                     setTimeout(() => {
                         confetti.remove();
-                    }, 5000);
+                    }, 4000);
                 }, i * 50);
             }
         }
 
-        function nextQuestion() {
-            currentQuestion++;
-            if (currentQuestion >= questions.length) {
-                endGame();
-            } else {
-                updateQuestion();
-            }
+        function updateDisplay() {
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('currentScore').textContent = score;
+            document.getElementById('questionTitle').textContent = `🔍 Document Detective Challenge #${currentQuestionIndex + 1}`;
+            document.getElementById('documentImage').src = documents[currentQuestionIndex].imageUrl;
+            updateProgressBar();
         }
 
-        function endGame() {
-            clearInterval(gameTimer);
-            document.getElementById('gameContainer').style.display = 'none';
-            document.getElementById('resultsScreen').style.display = 'block';
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / documents.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = progress.toFixed(1);
 
-            showResults();
-            createMegaConfetti();
+            // Update step indicators
+            for (let i = 1; i <= documents.length; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i <= currentQuestionIndex + 1) {
+                    stepElement.className = 'w-3 h-3 rounded-full bg-betano-orange transition-all duration-300 transform scale-110';
+                } else {
+                    stepElement.className = 'w-3 h-3 rounded-full bg-gray-300 transition-all duration-300';
+                }
+            }
         }
 
         function showResults() {
-            document.getElementById('finalScore').textContent = score;
-            document.getElementById('certScore').textContent = score;
-            document.getElementById('certDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
 
-            const performanceLevel = document.getElementById('performanceLevel');
+            const finalScore = score;
+            const accuracy = Math.round((correctAnswers / documents.length) * 100);
 
-            if (score >= 90) {
-                performanceLevel.textContent = '🌟 Ready to Moderate - You\'re a Document Detective Superstar!';
-                performanceLevel.className = 'performance-level ready';
-            } else if (score >= 80) {
-                performanceLevel.textContent = '📚 Needs Training - You\'re Almost There, Future Detective!';
-                performanceLevel.className = 'performance-level training';
+            document.getElementById('finalScore').textContent = finalScore;
+            document.getElementById('correctCount').textContent = `${correctAnswers}/8`;
+            document.getElementById('bonusCount').textContent = speedBonuses;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+
+            // Determine performance level
+            let level, emoji, title, subtitle, bgColor;
+
+            if (finalScore >= 90) {
+                level = 'Ready to Moderate';
+                emoji = '🏆';
+                title = 'Outstanding Detective Work!';
+                subtitle = 'You\'re ready to catch those document fraudsters!';
+                bgColor = 'bg-green-100 text-green-800';
+                document.getElementById('certificateSection').classList.remove('hidden');
+                document.getElementById('downloadBtn').classList.remove('hidden');
+            } else if (finalScore >= 80) {
+                level = 'Needs Training';
+                emoji = '📚';
+                title = 'Good Effort, Future Detective!';
+                subtitle = 'A bit more practice and you\'ll be unstoppable!';
+                bgColor = 'bg-yellow-100 text-yellow-800';
+                document.getElementById('certificateSection').classList.remove('hidden');
+                document.getElementById('downloadBtn').classList.remove('hidden');
             } else {
-                performanceLevel.textContent = '⚠️ High Risk - Time for Detective Boot Camp!';
-                performanceLevel.className = 'performance-level risk';
-
-                // Show answer key for low scores
-                if (wrongAnswers.length > 0) {
-                    document.getElementById('answerKey').style.display = 'block';
-                    const wrongAnswersDiv = document.getElementById('wrongAnswers');
-                    wrongAnswersDiv.innerHTML = wrongAnswers.map(wa => `
-                        <div class="wrong-answer">
-                            <strong>Document ${wa.question}:</strong> You chose ${wa.userAnswer.toUpperCase()}, but correct answer was ${wa.correctAnswer.toUpperCase()}
-                            ${wa.reason ? `<br><em>Reason: ${wa.reason}</em>` : ''}
-                        </div>
-                    `).join('');
-                }
+                level = 'High Risk / Not Suitable';
+                emoji = '🤔';
+                title = 'Time for Detective School!';
+                subtitle = 'Don\'t worry, even Sherlock had to start somewhere!';
+                bgColor = 'bg-red-100 text-red-800';
+                document.getElementById('reviewSection').classList.remove('hidden');
+                showWrongAnswers();
             }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultSubtitle').textContent = subtitle;
+            document.getElementById('levelText').textContent = level;
+            document.getElementById('performanceLevel').className = `mt-4 p-4 rounded-lg ${bgColor}`;
+            document.getElementById('certificateLevel').textContent = level;
+            document.getElementById('certificateName').textContent = window.userFullName || 'Detective';
+            document.getElementById('certificateDate').textContent = new Date().toLocaleDateString();
         }
 
-        function createMegaConfetti() {
-            const colors = ['#ffd700', '#fc6404', '#1464d4', '#4CAF50', '#ff4444'];
+        function showWrongAnswers() {
+            const container = document.getElementById('wrongAnswers');
+            container.innerHTML = '';
 
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = Math.random() * 15 + 5 + 'px';
-                    confetti.style.height = confetti.style.width;
-                    confetti.style.animationDuration = (Math.random() * 4 + 3) + 's';
-                    confetti.style.animation = `fall ${confetti.style.animationDuration} linear forwards`;
-
-                    document.body.appendChild(confetti);
-
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 7000);
-                }, i * 30);
-            }
+            wrongAnswers.forEach(answer => {
+                const div = document.createElement('div');
+                div.className = 'bg-red-50 border-l-4 border-red-400 p-4 rounded';
+                div.innerHTML = `
+                    <h4 class="font-bold text-red-800">Question ${answer.question}</h4>
+                    <p class="text-red-700 mt-2"><strong>Your answer:</strong> ${answer.userAnswer}</p>
+                    <p class="text-red-700"><strong>Correct answer:</strong> ${answer.correctAnswer}</p>
+                    <p class="text-red-600 mt-2"><strong>Why:</strong> ${answer.reason}</p>
+                `;
+                container.appendChild(div);
+            });
         }
 
-        // CSS animation for falling confetti
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fall {
-                0% {
-                    transform: translateY(-100vh) rotate(0deg);
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(100vh) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswers = 0;
+            speedBonuses = 0;
+            wrongAnswers = [];
+
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        function downloadCertificate() {
+            alert('🎉 Certificate download feature would be implemented here! For now, take a screenshot of your achievement!');
+        }
     </script>
-    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'963a7865e1c4ff73',t:'MTc1MzI2NjI5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'963acb59e25e46f2',t:'MTc1MzI2OTY4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
 
 </html>
