@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Bogus - No Place for Fakes!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fc6404;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 1000;
+        }
+
+        .confetti:nth-child(odd) {
+            background: #1464d4;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .pulse-timer {
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes pulse-red {
+
+            0%,
+            100% {
+                background-color: #dc2626;
+                transform: scale(1);
+            }
+
+            50% {
+                background-color: #ef4444;
+                transform: scale(1.05);
+            }
+        }
+
+        .score-popup {
+            animation: score-bounce 0.8s ease-out;
+        }
+
+        @keyframes score-bounce {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2) rotate(-10deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, #fc6404 0%, #1464d4 100%);
+            border: 3px solid #ffd700;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-900 to-orange-900 min-h-screen font-sans">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">🎯 Focus Bogus Challenge</h1>
+            <h2 class="text-2xl text-orange-600 mb-6">"No Place for Fakes—Your Focus is the Shield!"</h2>
+            <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                <p class="text-lg text-gray-700 mb-4">Welcome to your Focus Bogus Challenge! You'll face 6 scenarios
+                    where fake logos try to sneak past your eagle eyes. Each correct answer scores you points. Think
+                    fast, think fair!</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="bg-blue-100 p-3 rounded">
+                        <div class="font-bold text-blue-800">⚡ Quick Answer (60+ sec left)</div>
+                        <div class="text-blue-600">+15 points</div>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded">
+                        <div class="font-bold text-green-800">✅ Correct Answer (under 60 sec)</div>
+                        <div class="text-green-600">+10 points</div>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded">
+                        <div class="font-bold text-red-800">❌ Wrong Answer</div>
+                        <div class="text-red-600">0 points</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-lg mb-6">
+                <h3 class="font-bold text-yellow-800 mb-2">🏆 Scoring Levels:</h3>
+                <div class="text-sm text-yellow-700">
+                    <div>75+ = Ready to Moderate (Logo Legend!)</div>
+                    <div>60-75 = Needs Training (Almost There!)</div>
+                    <div>0-60 = High Risk (Time for Boot Camp!)</div>
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <label for="playerName" class="block text-lg font-semibold text-gray-700 mb-2">👤 Enter Your
+                    Name:</label>
+                <input type="text" id="playerName" placeholder="Your full name"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none transition-colors"
+                    maxlength="50">
+            </div>
+            <button onclick="startGame()"
+                class="bg-gradient-to-r from-orange-500 to-blue-600 text-white px-8 py-4 rounded-full text-xl font-bold hover:from-orange-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200">
+                🚀 Start the Challenge!
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden min-h-screen p-4">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-gray-800">Focus Bogus Challenge</h1>
+                    <div class="bg-blue-100 px-3 py-1 rounded-full">
+                        <span class="text-blue-800 font-semibold">Scenario <span id="currentScenario">1</span>/6</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-green-100 px-4 py-2 rounded-full">
+                        <span class="text-green-800 font-bold">Score: <span id="currentScore">0</span></span>
+                    </div>
+                    <div id="timerDisplay" class="bg-gray-100 px-4 py-2 rounded-full">
+                        <span class="text-gray-800 font-bold">Time: <span id="timeLeft">90</span>s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>Progress</span>
+                    <span><span id="progressPercent">17</span>% Complete</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar"
+                        class="bg-gradient-to-r from-orange-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
+                        style="width: 17%"></div>
+                </div>
+                <div class="flex justify-between mt-2">
+                    <div id="scenario1" class="w-4 h-4 rounded-full bg-orange-500 border-2 border-white shadow-sm">
+                    </div>
+                    <div id="scenario2" class="w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
+                    <div id="scenario3" class="w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
+                    <div id="scenario4" class="w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
+                    <div id="scenario5" class="w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
+                    <div id="scenario6" class="w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Warning Popup -->
+        <div id="timerWarning" class="hidden fixed top-4 right-4 z-30 pointer-events-none">
+            <div class="bg-red-500 text-white p-6 rounded-2xl text-center pulse-timer pointer-events-auto">
+                <h2 class="text-2xl font-bold mb-2">⏰ HURRY UP!</h2>
+                <div class="text-4xl font-bold" id="warningTimer">30</div>
+                <p class="text-lg mt-2">Seconds left!</p>
+            </div>
+        </div>
+
+        <!-- Score Popup -->
+        <div id="scorePopup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
+            <div class="bg-green-500 text-white px-6 py-4 rounded-full text-2xl font-bold score-popup">
+                +<span id="scoreAmount">10</span> Points! 🎉
+            </div>
+        </div>
+
+        <!-- Game Content -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Spot the Real Logo!</h2>
+                <p class="text-lg text-gray-600">One of these logos is authentic, the other is a sneaky fake. Choose
+                    wisely!</p>
+            </div>
+
+            <p class="text-center text-lg text-gray-600 mb-6 font-medium">👇 Click on the logo you trust to be authentic
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Logo A</h3>
+                    <div class="bg-gray-100 rounded-lg p-8 hover:bg-gray-200 transition-colors cursor-pointer hover:shadow-lg"
+                        onclick="selectAnswer(1)">
+                        <img id="image1" src="https://www.example.com/image.jpg" alt="Logo A"
+                            class="w-full h-48 object-contain mx-auto">
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Logo B</h3>
+                    <div class="bg-gray-100 rounded-lg p-8 hover:bg-gray-200 transition-colors cursor-pointer hover:shadow-lg"
+                        onclick="selectAnswer(2)">
+                        <img id="image2" src="https://www.example.com/image.jpg" alt="Logo B"
+                            class="w-full h-48 object-contain mx-auto">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Continue Button (hidden by default) -->
+            <div id="continueSection" class="hidden text-center mt-8">
+                <button id="continueButton" onclick="nextScenario()"
+                    class="bg-gradient-to-r from-orange-500 to-blue-600 text-white px-8 py-4 rounded-full text-xl font-bold hover:from-orange-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200">
+                    Continue to Next Scenario →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-4xl text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-6">🎉 Challenge Complete!</h1>
+
+            <div class="bg-gradient-to-r from-orange-100 to-blue-100 p-6 rounded-lg mb-6">
+                <div class="text-6xl font-bold text-gray-800 mb-2" id="finalScore">0</div>
+                <div class="text-2xl font-semibold" id="scoreLevel">Ready to Moderate!</div>
+                <div class="text-lg text-gray-600 mt-2" id="scoreMessage">You're a logo detection legend!</div>
+            </div>
+
+            <div id="wrongAnswers" class="hidden bg-red-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-red-800 mb-4">📚 Learning Opportunities:</h3>
+                <div id="wrongAnswersList" class="text-left space-y-2"></div>
+            </div>
+
+            <div id="certificateSection" class="hidden">
+                <button onclick="generateCertificate()"
+                    class="bg-gradient-to-r from-orange-500 to-blue-600 text-white px-8 py-4 rounded-full text-xl font-bold hover:from-orange-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 mb-4">
+                    🏆 Generate Certificate
+                </button>
+            </div>
+
+            <div>
+                <button onclick="restartGame()"
+                    class="bg-gray-500 text-white px-6 py-3 rounded-full font-bold hover:bg-gray-600 transition-colors mr-4">
+                    🔄 Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div id="certificateModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="certificate rounded-2xl p-8 max-w-2xl text-center text-white">
+            <h1 class="text-4xl font-bold mb-4">🏆 CERTIFICATE OF COMPLETION</h1>
+            <div class="text-2xl mb-6">Focus Bogus Challenge</div>
+            <div class="text-lg mb-4">This certifies that</div>
+            <div class="text-3xl font-bold mb-4" id="certName">Team Member</div>
+            <div class="text-lg mb-4">has successfully completed the</div>
+            <div class="text-2xl font-bold mb-6">"No Place for Fakes" Training Module</div>
+            <div class="text-lg mb-4">Final Score: <span id="certScore">0</span>/90</div>
+            <div class="text-lg mb-6">Status: <span id="certLevel">Ready to Moderate</span></div>
+            <div class="text-sm mb-6">Document Verification Training</div>
+            <button onclick="closeCertificate()"
+                class="bg-white text-blue-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                Close Certificate
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentScenario = 1;
+        let score = 0;
+        let timeLeft = 60;
+        let timer;
+        let wrongAnswers = [];
+        let playerName = "";
+
+        // ========================================
+        // BACKEND TEAM - IMAGE CONFIGURATION
+        // ========================================
+        // Instructions: Replace the URLs below with actual image URLs
+        // - image1 = Logo A (left side)
+        // - image2 = Logo B (right side)
+        // - correct = 1 means Logo A is authentic, correct = 2 means Logo B is authentic
+        // - Make sure images are accessible and properly formatted (JPG, PNG, SVG)
+
+        const scenarios = [
+            // SCENARIO 1: Logo B is the authentic one
+            {
+                correct: 2, // Logo B (image2) is correct
+                image1: "Focus bogus/Question 1/Picture1.png",    // REPLACE: Fake logo URL
+                image2: "Focus bogus/Question 1/Picture2- Correct.png"     // REPLACE: Real logo URL
+            },
+
+            // SCENARIO 2: Logo A is the authentic one
+            {
+                correct: 1, // Logo A (image1) is correct
+                image1: "Focus bogus/Question 2/Picture3-Correct.png",    // REPLACE: Real logo URL
+                image2: "Focus bogus/Question 2/Picture4.png"     // REPLACE: Fake logo URL
+            },
+
+            // SCENARIO 3: Logo A is the authentic one
+            {
+                correct: 1, // Logo A (image1) is correct
+                image1: "Focus bogus/Question 3/Picture1-correct.png",    // REPLACE: Real logo URL
+                image2: "Focus bogus/Question 3/Picture6.png"     // REPLACE: Fake logo URL
+            },
+
+            // SCENARIO 4: Logo A is the authentic one
+            {
+                correct: 1, // Logo A (image1) is correct
+                image1: "Focus bogus/Question 4/Picture8-Correct.png",  // REPLACE: Real logo URL
+                image2: "Focus bogus/Question 4/Picture9.png"      // REPLACE: Fake logo URL
+            },
+
+            // SCENARIO 5: Logo B is the authentic one
+            {
+                correct: 2, // Logo B (image2) is correct
+                image1: "Focus bogus/Question 5/Picture1.png",      // REPLACE: Fake logo URL
+                image2: "Focus bogus/Question 5/Picture11-Correct.png"      // REPLACE: Real logo URL
+            },
+
+            // SCENARIO 6: Logo A is the authentic one
+            {
+                correct: 1, // Logo A (image1) is correct
+                image1: "Focus bogus/Question 6/Picture13-correct.png",      // REPLACE: Real logo URL
+                image2: "Focus bogus/Question 6/Picture14.png"     // REPLACE: Fake logo URL
+            }
+        ];
+
+        // ========================================
+        // END OF IMAGE CONFIGURATION
+        // ========================================
+
+        function startGame() {
+            // Get player name
+            playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                playerName = "Team Member";
+            }
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            updateProgress();
+            loadScenarioImages();
+            startTimer();
+        }
+
+        function loadScenarioImages() {
+            const scenario = scenarios[currentScenario - 1];
+            document.getElementById('image1').src = scenario.image1;
+            document.getElementById('image2').src = scenario.image2;
+        }
+
+        function startTimer() {
+            timeLeft = 90;
+            updateTimerDisplay();
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 30 && timeLeft > 0) {
+                    showTimerWarning();
+                } else if (timeLeft <= 0) {
+                    selectAnswer(0); // Time's up, wrong answer
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timeLeft').textContent = timeLeft;
+            document.getElementById('warningTimer').textContent = timeLeft;
+
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timeLeft <= 30) {
+                timerDisplay.className = 'bg-red-100 px-4 py-2 rounded-full';
+                timerDisplay.querySelector('span').className = 'text-red-800 font-bold';
+            } else {
+                timerDisplay.className = 'bg-gray-100 px-4 py-2 rounded-full';
+                timerDisplay.querySelector('span').className = 'text-gray-800 font-bold';
+            }
+        }
+
+        function showTimerWarning() {
+            if (timeLeft <= 30 && timeLeft > 0) {
+                document.getElementById('timerWarning').classList.remove('hidden');
+            } else {
+                document.getElementById('timerWarning').classList.add('hidden');
+            }
+        }
+
+        let autoAdvanceTimeout;
+
+        function selectAnswer(choice) {
+            clearInterval(timer);
+            document.getElementById('timerWarning').classList.add('hidden');
+
+            const correct = scenarios[currentScenario - 1].correct;
+            let points = 0;
+
+            // Show visual feedback
+            showAnswerFeedback(choice, correct);
+
+            if (choice === correct) {
+                if (timeLeft >= 60) {
+                    points = 15; // Full points for answering with 60+ seconds
+                } else {
+                    points = 10; // Reduced points for answering with less than 60 seconds
+                }
+                score += points;
+                showScorePopup(points);
+                createConfetti(points === 15 ? 50 : 30);
+            } else {
+                wrongAnswers.push({
+                    scenario: currentScenario,
+                    chosen: choice,
+                    correct: correct
+                });
+            }
+
+            updateScore();
+
+            // Show continue button
+            document.getElementById('continueSection').classList.remove('hidden');
+
+            // Auto-advance after 5 seconds only after user has selected
+            autoAdvanceTimeout = setTimeout(() => {
+                nextScenario();
+            }, 5000);
+        }
+
+        function showAnswerFeedback(chosen, correct) {
+            // Reset all logos to normal state
+            document.getElementById('image1').parentElement.className = 'bg-gray-100 rounded-lg p-8 transition-colors';
+            document.getElementById('image2').parentElement.className = 'bg-gray-100 rounded-lg p-8 transition-colors';
+
+            // Show correct answer in green
+            if (correct === 1) {
+                document.getElementById('image1').parentElement.className = 'bg-green-100 rounded-lg p-8 border-4 border-green-500 transition-colors';
+                document.getElementById('image1').parentElement.innerHTML = document.getElementById('image1').parentElement.innerHTML + '<div class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">✓ CORRECT</div>';
+            } else {
+                document.getElementById('image2').parentElement.className = 'bg-green-100 rounded-lg p-8 border-4 border-green-500 transition-colors';
+                document.getElementById('image2').parentElement.innerHTML = document.getElementById('image2').parentElement.innerHTML + '<div class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">✓ CORRECT</div>';
+            }
+
+            // Show wrong answer in red (if user chose wrong)
+            if (chosen !== correct && chosen !== 0) {
+                if (chosen === 1) {
+                    document.getElementById('image1').parentElement.className = 'bg-red-100 rounded-lg p-8 border-4 border-red-500 transition-colors';
+                    document.getElementById('image1').parentElement.innerHTML = document.getElementById('image1').parentElement.innerHTML + '<div class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">✗ WRONG</div>';
+                } else {
+                    document.getElementById('image2').parentElement.className = 'bg-red-100 rounded-lg p-8 border-4 border-red-500 transition-colors';
+                    document.getElementById('image2').parentElement.innerHTML = document.getElementById('image2').parentElement.innerHTML + '<div class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">✗ WRONG</div>';
+                }
+            }
+
+            // Make containers relative for absolute positioning of badges
+            document.getElementById('image1').parentElement.style.position = 'relative';
+            document.getElementById('image2').parentElement.style.position = 'relative';
+
+            // Feedback will be shown for 8 seconds before auto-advancing
+        }
+
+
+
+        function showScorePopup(points) {
+            document.getElementById('scoreAmount').textContent = points;
+            const popup = document.getElementById('scorePopup');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 2000);
+        }
+
+        function createConfetti(count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 50);
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('currentScore').textContent = score;
+        }
+
+        function updateProgress() {
+            const progressPercent = Math.round((currentScenario / 6) * 100);
+            document.getElementById('progressPercent').textContent = progressPercent;
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+
+            // Update scenario indicators
+            for (let i = 1; i <= 6; i++) {
+                const indicator = document.getElementById(`scenario${i}`);
+                if (i < currentScenario) {
+                    // Completed scenarios - green
+                    indicator.className = 'w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow-sm';
+                } else if (i === currentScenario) {
+                    // Current scenario - orange
+                    indicator.className = 'w-4 h-4 rounded-full bg-orange-500 border-2 border-white shadow-sm';
+                } else {
+                    // Future scenarios - gray
+                    indicator.className = 'w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm';
+                }
+            }
+        }
+
+        function nextScenario() {
+            // Clear any pending auto-advance timeout
+            if (autoAdvanceTimeout) {
+                clearTimeout(autoAdvanceTimeout);
+                autoAdvanceTimeout = null;
+            }
+
+            // Reset visual feedback before moving to next scenario
+            resetAnswerFeedback();
+
+            if (currentScenario < 6) {
+                currentScenario++;
+                document.getElementById('currentScenario').textContent = currentScenario;
+                updateProgress();
+                loadScenarioImages();
+                startTimer();
+            } else {
+                showResults();
+            }
+        }
+
+        function resetAnswerFeedback() {
+            // Reset both logo containers to original state
+            const container1 = document.getElementById('image1').parentElement;
+            const container2 = document.getElementById('image2').parentElement;
+
+            container1.className = 'bg-gray-100 rounded-lg p-8 hover:bg-gray-200 transition-colors cursor-pointer hover:shadow-lg';
+            container2.className = 'bg-gray-100 rounded-lg p-8 hover:bg-gray-200 transition-colors cursor-pointer hover:shadow-lg';
+
+            // Remove any feedback badges by resetting innerHTML to just the image
+            container1.innerHTML = `<img id="image1" src="${document.getElementById('image1').src}" alt="Logo A" class="w-full h-48 object-contain mx-auto">`;
+            container2.innerHTML = `<img id="image2" src="${document.getElementById('image2').src}" alt="Logo B" class="w-full h-48 object-contain mx-auto">`;
+
+            // Hide continue button for next scenario
+            document.getElementById('continueSection').classList.add('hidden');
+        }
+
+        function showResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            document.getElementById('finalScore').textContent = score;
+
+            let level, message;
+            if (score >= 75) {
+                level = "Ready to Moderate! 🏆";
+                message = "You're a logo detection legend! Fakes don't stand a chance!";
+            } else if (score >= 60) {
+                level = "Needs Training 📚";
+                message = "Almost there! A bit more practice and you'll be unstoppable!";
+            } else {
+                level = "High Risk ⚠️";
+                message = "Time for boot camp! Don't worry, everyone starts somewhere!";
+            }
+
+            document.getElementById('scoreLevel').textContent = level;
+            document.getElementById('scoreMessage').textContent = message;
+
+            // Show certificate button only if score is above 75
+            if (score >= 75) {
+                document.getElementById('certificateSection').classList.remove('hidden');
+            }
+
+            if (wrongAnswers.length > 0) {
+                document.getElementById('wrongAnswers').classList.remove('hidden');
+                const list = document.getElementById('wrongAnswersList');
+                list.innerHTML = '';
+                wrongAnswers.forEach(wrong => {
+                    const item = document.createElement('div');
+                    item.className = 'text-red-700';
+                    item.innerHTML = `Scenario ${wrong.scenario}: You chose Logo ${wrong.chosen === 1 ? 'A' : 'B'}, but Logo ${wrong.correct === 1 ? 'A' : 'B'} was correct.`;
+                    list.appendChild(item);
+                });
+            }
+
+            createConfetti(30);
+        }
+
+        function generateCertificate() {
+            document.getElementById('certScore').textContent = score;
+            document.getElementById('certName').textContent = playerName;
+            let level;
+            if (score >= 75) {
+                level = "Ready to Moderate";
+            } else if (score >= 60) {
+                level = "Needs Training";
+            } else {
+                level = "High Risk";
+            }
+            document.getElementById('certLevel').textContent = level;
+            document.getElementById('certificateModal').classList.remove('hidden');
+            createConfetti(100);
+        }
+
+        function closeCertificate() {
+            document.getElementById('certificateModal').classList.add('hidden');
+        }
+
+        function restartGame() {
+            currentScenario = 1;
+            score = 0;
+            wrongAnswers = [];
+            document.getElementById('currentScenario').textContent = '1';
+            document.getElementById('currentScore').textContent = '0';
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            updateProgress();
+            loadScenarioImages();
+            startTimer();
+        }
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'963a0546d4f748e0',t:'MTc1MzI2MTU3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>
